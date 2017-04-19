@@ -73,8 +73,11 @@ class AuthController extends Controller
         ]);
     }
 
-    public function redirectToProvider($provider)
+    public function redirectToProvider($provider=null)
     {
+        if (!config("services.$provider")) {
+            abort('404');
+        } //just to handle providers that doesn't exist
         return Socialite::driver($provider)->redirect();
     }
 
@@ -88,11 +91,15 @@ class AuthController extends Controller
      */
     public function handleProviderCallback($provider)
     {
-        $user = Socialite::driver($provider)->user();
+        if ($user = $this->socialite->with($provider)->user()) {
+            $user = Socialite::driver($provider)->user();
 
-        $authUser = $this->findOrCreateUser($user, $provider);
-        Auth::login($authUser, true);
-        return redirect($this->redirectTo);
+            $authUser = $this->findOrCreateUser($user, $provider);
+            Auth::login($authUser, true);
+            return redirect($this->redirectTo);
+        } else {
+            return 'something went wrong';
+        }
     }
 
     /**

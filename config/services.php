@@ -36,8 +36,13 @@ return [
     ],
     'google' => [
         'client_id' => 'XXXX',
-        'client_secret' => 'XXX',
+        'client_secret' => 'XXXX',
         'redirect' => 'http://localhost:8000/auth/google/callback',
+    ],
+    'facebook' => [
+        'client_id' => 'XXXX',
+        'client_secret' => 'XXXX',
+        'redirect' => 'http://localhost:8000/auth/facebook/callback',
     ],
 
 ];
