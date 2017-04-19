@@ -8,7 +8,7 @@ This is protocol for laravel 5.2 socialite integration
 2. php artisan key:generate
 3. Run migrations
 4. Update the composer
-5. Define the below provider details for all social networks, for eg -
+5. Define the below provider details for all social networks in 'config/services.php', for eg -
 
     'google' => [
             'client_id' => 'XXXX',
