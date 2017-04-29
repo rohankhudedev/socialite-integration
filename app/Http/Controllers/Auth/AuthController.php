@@ -79,6 +79,19 @@ class AuthController extends Controller
             abort('404');
         } //just to handle providers that doesn't exist
         return Socialite::driver($provider)->redirect();
+
+        /*
+        ***Snippet2*** - for extra details pass fields to facebook
+        if ($provider=='google') {
+            return Socialite::driver($provider)->redirect();
+        } elseif ($provider=='facebook') {
+            return Socialite::driver($provider)->fields([
+                'first_name', 'last_name', 'email', 'gender', 'birthday'
+            ])->scopes([
+                'email', 'user_birthday'
+            ])->redirect();
+        }
+         */
     }
 
     /**
@@ -94,9 +107,26 @@ class AuthController extends Controller
         if ($user = $this->socialite->with($provider)->user()) {
             $user = Socialite::driver($provider)->user();
 
+            /*
+            ***Snippet2***
+            if ($provider=='google') {
+                $user = Socialite::driver($provider)->user();
+            } elseif ($provider=='facebook') {
+                $user = Socialite::driver($provider)->fields([
+                    'first_name', 'last_name', 'email', 'gender', 'birthday'
+                ])->user();
+            }
+             */
+
             $authUser = $this->findOrCreateUser($user, $provider);
             Auth::login($authUser, true);
+            //this will redirect to website index page of your website
             return redirect($this->redirectTo);
+            /*This will redirect to last requested page by user.
+            Note - suppose user manually went to login then below code will show 404 error, because there
+            is no last requested url, so write handler for redirecting all 404 to index page
+            */
+            //return Redirect::intended('home');
         } else {
             return 'something went wrong';
         }
@@ -111,6 +141,21 @@ class AuthController extends Controller
     */
     public function findOrCreateUser($user, $provider)
     {
+        /*
+         ***Snippet2***
+         $name=$lastname=$email=$phone=$country=$state=$city=$address=$zipcode=$gender="";
+            if ($provider=='google') {
+                $email=$user->email;
+                $name=$user->user['name']['givenName'];
+                $lastname=$user->user['name']['familyName'];
+                $gender=$user->user['gender'];
+            } elseif ($provider=='facebook') {
+                $email=isset($user->email)?$user->email:"";
+                $name=$user->user['first_name'];
+                $lastname=$user->user['last_name'];
+                $gender=$user->user['gender'];
+            }
+         */
         $authUser = User::where('provider_id', $user->id)->first();
         if ($authUser) {
             return $authUser;
